@@ -329,10 +329,13 @@ module.exports = class bitflyer extends Exchange {
         const amount = this.safeFloat (order, 'size');
         const remaining = this.safeFloat (order, 'outstanding_size');
         const filled = this.safeFloat (order, 'executed_size');
-        const price = this.safeFloat (order, 'price');
+        let price = this.safeFloat (order, 'price');
+        const type = this.safeStringLower (order, 'child_order_type');
+        if (type === 'market') {
+            price = this.safeFloat (order, 'average_price');
+        }
         const cost = price * filled;
         const status = this.parseOrderStatus (this.safeString (order, 'child_order_state'));
-        const type = this.safeStringLower (order, 'child_order_type');
         const side = this.safeStringLower (order, 'side');
         let symbol = undefined;
         if (market === undefined) {
